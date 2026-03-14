@@ -1,18 +1,27 @@
 #include <Arduino.h>
 
-// put function declarations here:
-int myFunction(int, int);
+int RELAY = 23;
+int SW = 15;
+volatile bool relayOn = false;
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+IRAM_ATTR void pushButton(){
+  relayOn = ! relayOn;
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void setup(){
+  Serial.begin(115200);
+  delay(500);
+  Serial.println("Starting");
+  pinMode(RELAY, OUTPUT);
+  pinMode(SW, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(SW), pushButton, FALLING);
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void loop(){
+  delay(100);
+  if (relayOn){
+    digitalWrite(RELAY,HIGH);
+  } else{
+    digitalWrite(RELAY, LOW);
+  }
 }
